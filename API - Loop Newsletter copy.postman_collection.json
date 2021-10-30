@@ -1,0 +1,1060 @@
+{
+	"variables": [],
+	"info": {
+		"name": "API : Loop Newsletter copy",
+		"_postman_id": "9ccb38fe-d6b4-01d0-096c-5b91d573d8f2",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User : Login API",
+			"request": {
+				"url": "http://localhost/loop/index.php/api/authentication_api/login_post",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "mobile",
+							"value": "8003836364",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "456",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"description": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/api/Authentication_api/login"
+			},
+			"response": []
+		},
+		{
+			"name": "User : Registration API",
+			"request": {
+				"url": "http://localhost/loop/index.php/api/authentication_api/registration_post",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "veer singh",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "veersingh@gmail.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "mobile",
+							"value": "800383626",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "4565",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/api/Authentication_api/registration"
+			},
+			"response": []
+		},
+		{
+			"name": "User : Get User by ID",
+			"request": {
+				"url": "http://localhost/loop/index.php/api/authentication_api/user_post",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "5",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/api/Authentication_api/user/12"
+			},
+			"response": []
+		},
+		{
+			"name": "User : Update User by ID",
+			"request": {
+				"url": "http://localhost/loop/index.php/api/authentication_api/update_post",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "1240",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Hemendra",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "mobile",
+							"value": "8003836364",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "hemendra@gmail.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "dob",
+							"value": "1995-07-05",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "gender",
+							"value": "",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/api/authentication/update/1240"
+			},
+			"response": []
+		},
+		{
+			"name": "User : Change Password",
+			"request": {
+				"url": "http://localhost/loop/index.php/api/authentication_api/changePassword_post",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "password",
+							"value": "123",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "confirm_password",
+							"value": "123",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "id",
+							"value": "5",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/api/authentication/changepassword"
+			},
+			"response": []
+		},
+		{
+			"name": "User : OTP Post",
+			"request": {
+				"url": "http://localhost/loop/index.php/api/authentication_api/sent_post",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "mobile",
+							"value": "1234567890",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/api/authentication_api/sent"
+			},
+			"response": []
+		},
+		{
+			"name": "User : OTP Verify",
+			"request": {
+				"url": "http://localhost/loop/index.php/api/authentication_api/otpVerify_post",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "mobile",
+							"value": "0987654321",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "otp",
+							"value": "9053",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "456",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/api/authentication/otpverify"
+			},
+			"response": []
+		},
+		{
+			"name": "Add To Cart  : Add",
+			"request": {
+				"url": "http://localhost/loop/index.php/Orders_api/add_to_cart",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "date",
+							"value": "2021-05-31",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "cart_id",
+							"value": "1001",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "5",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "subscription_plan_id",
+							"value": "1",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "amount",
+							"value": "99",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "other_tax",
+							"value": "1",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "grand_total",
+							"value": "",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/Orders_api/add_to_cart"
+			},
+			"response": []
+		},
+		{
+			"name": "Add To Cart : Update",
+			"request": {
+				"url": "http://localhost/loop/index.php/Orders_api/cart_update",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "date",
+							"value": "2021-05-31",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "cart_id",
+							"value": "11111",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "5",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "subscription_plan_id",
+							"value": "2",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "amount",
+							"value": "250",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "other_tax",
+							"value": "49",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "grand_total",
+							"value": "",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/Orders_api/cart_update"
+			},
+			"response": []
+		},
+		{
+			"name": "Employees Panel : List",
+			"request": {
+				"url": "http://localhost/loop/index.php/Employees_api/index",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "http://localhost/loop/index.php/User_api/index"
+			},
+			"response": []
+		},
+		{
+			"name": "Employees Panel : Insert",
+			"request": {
+				"url": "http://localhost/loop/index.php/Employees_api/insert",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "Veer",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "employee_code",
+							"value": "11",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "veer@gmail.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "mobile_no",
+							"value": "8003030393",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "role_id",
+							"value": "3",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "department_id",
+							"value": "3",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "veer",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "456",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "pan_no",
+							"value": "FPUPS1498K",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "blood_group",
+							"value": "A+",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "gender",
+							"value": "Male",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "aadhaar_no",
+							"value": "9449944994499449",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "medical_status",
+							"value": "Yes",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "report_no",
+							"value": "49494",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "dob",
+							"value": "07-05-1996",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "photo",
+							"value": "veer.jpg",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "address",
+							"value": "udaipur",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/User_api/insert"
+			},
+			"response": []
+		},
+		{
+			"name": "Employees Panel : Update",
+			"request": {
+				"url": "http://localhost/loop/index.php/Employees_api/update",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "336",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "Veer Shaktawat",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "employee_code",
+							"value": "11",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "veer@gmail.com",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "mobile_no",
+							"value": "58558855885",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "role_id",
+							"value": "3",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "department_id",
+							"value": "12",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "veer",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "456",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "pan_no",
+							"value": "FPUPS1491K",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "blood_group",
+							"value": "A+",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "gender",
+							"value": "Male",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "aadhaar_no",
+							"value": "488448844884488448",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "medical_status",
+							"value": "Yes",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "report_no",
+							"value": "5949",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "dob",
+							"value": "07-05-1998",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "photo",
+							"value": "profile.jpg",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "address",
+							"value": "Udaipur",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/User_api/update"
+			},
+			"response": []
+		},
+		{
+			"name": "Subscription Panel : List",
+			"request": {
+				"url": "http://localhost/loop/index.php/Subscription_api/index",
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Requested-With",
+						"value": "",
+						"description": ""
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": "http://localhost/loop/index.php/api/index"
+			},
+			"response": []
+		},
+		{
+			"name": "Subscription Panel : Insert",
+			"request": {
+				"url": "http://localhost/loop/index.php/Subscription_api/insert",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "title",
+							"value": "Insert From API",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Hello from API",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "55",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "duration",
+							"value": "one month",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "features[]",
+							"value": "hello api",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "features[]",
+							"value": "hello api 2",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "features[]",
+							"value": "hello api 3",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/api/insert"
+			},
+			"response": []
+		},
+		{
+			"name": "Subscription Panel : Update",
+			"request": {
+				"url": "http://localhost/loop/index.php/Subscription_api/update",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "143",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "Update From API",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Hello from API",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "99",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "duration",
+							"value": "Per Month",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "features[]",
+							"value": "Update From API",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "features[]",
+							"value": "Update From API",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/api/update"
+			},
+			"response": []
+		},
+		{
+			"name": "Subscription Panel : List by ID",
+			"request": {
+				"url": "http://localhost/loop/index.php/Subscription_api/fetch_single",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "3",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/Subscription_api/fetch_single"
+			},
+			"response": []
+		},
+		{
+			"name": "Orders Panel : List",
+			"request": {
+				"url": "http://localhost/loop/index.php/Orders_api/index",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "http://localhost/loop/index.php/Orders_api/index"
+			},
+			"response": []
+		},
+		{
+			"name": "Orders Panel : Insert",
+			"request": {
+				"url": "http://localhost/loop/index.php/Orders_api/insert",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "order_date",
+							"value": "21-05-2021",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "order_id",
+							"value": "10001",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "6",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "subscription_plan_id",
+							"value": "2",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "amount",
+							"value": "250",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "other_tax",
+							"value": "50",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "grand_total",
+							"value": "109",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "payment_terms",
+							"value": "Online",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "payment_status",
+							"value": "Pending",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/Orders_api/insert"
+			},
+			"response": []
+		},
+		{
+			"name": "Orders Panel : Update",
+			"request": {
+				"url": "http://localhost/loop/index.php/Orders_api/update",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "10001",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "order_date",
+							"value": "21/05/2021",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "order_id",
+							"value": "11111",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "5",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "subscription_plan_id",
+							"value": "2",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "amount",
+							"value": "500",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "other_tax",
+							"value": "100",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "grand_total",
+							"value": "600",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "payment_terms",
+							"value": "Online",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "payment_status",
+							"value": "Pending",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/Orders_api/update"
+			},
+			"response": []
+		},
+		{
+			"name": "Orders Panel : List by User's ID",
+			"request": {
+				"url": "http://localhost/loop/index.php/Orders_api/fetch_single",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "user_id",
+							"value": "1240",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/Orders_api/fetch_single"
+			},
+			"response": []
+		},
+		{
+			"name": "Gallery Panel : List",
+			"request": {
+				"url": "http://localhost/loop/index.php/Gallery_api/index",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": "http://localhost/loop/index.php/Gallery_api/index"
+			},
+			"response": []
+		},
+		{
+			"name": "Gallery Panel : Insert",
+			"request": {
+				"url": "http://localhost/loop/index.php/Gallery_api/insert",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "user_id",
+							"value": "6",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "brithday picture",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"description": "",
+							"type": "file",
+							"src": "tm-img-12-tn.jpg"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/Gallery_api/insert"
+			},
+			"response": []
+		},
+		{
+			"name": "Gallery Panel : Update",
+			"request": {
+				"url": "http://localhost/loop/index.php/Gallery_api/update",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "40",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "user_id",
+							"value": "6",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "Profile Pic",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"description": "",
+							"type": "file",
+							"src": "avatar5.png"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/Gallery_api/update"
+			},
+			"response": []
+		},
+		{
+			"name": "Gallery API : List by User's ID",
+			"request": {
+				"url": "http://localhost/loop/index.php/Gallery_api/fetch_single",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "user_id",
+							"value": "1240",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": "http://localhost/loop/index.php/Gallery_api/fetch_single"
+			},
+			"response": []
+		}
+	]
+}
