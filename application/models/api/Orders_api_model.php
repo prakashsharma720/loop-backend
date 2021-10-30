@@ -51,29 +51,36 @@ class Orders_api_model extends CI_Model
 	{
 		$this->db->insert('orders', $data);
 		$order_id = $this->input->post('order_id');
-		 $this->addOrderDetails($order_id);
+		$this->addOrderDetails($order_id);
 	}
 
-	 public function addOrderDetails($order_id){
+	public function addOrderDetails($order_id){
         $this->db->where('order_id', $order_id);
         $this->db->delete('order_details');
-        // if(!empty($this->input->post('addon_service_id'))){
-        //      foreach ($this->input->post('addon_service_id') as $key => $value) :
-        //         $this->db->set('order_id', $order_id);
-        //         $this->db->set('addon_service_id', $value);
-        //         $this->db->set('qty', $this->input->post('qty')[$key]);
-        //         $this->db->set('price', $this->input->post('price')[$key]);
-        //         $this->db->set('total', $this->input->post('total')[$key]);
-        //         $this->db->insert('order_details');
-        //     endforeach;
+        
+        //  foreach ($this->input->post('addon_service')  as $key => $value) {
+        //     $this->db->set('order_id', $order_id);
+        //     $this->db->set('addon_service_id', $value['addon_service_id']);
+        //     $this->db->set('qty', $value['qty']);
+        //     $this->db->set('price', $value['price']);
+        //     $this->db->set('total', $value['total']);
+        //     $this->db->insert('order_details');
         // }
-
-        foreach ($addon_service  as $key => $value) {
-            $this->db->set('order_id', $order_id);
-            $this->db->set('addon_service_id', $value['addon_service_id']);
-            $this->db->set('qty', $value['qty']);
-            $this->db->set('price', $value['price']);
-            $this->db->set('total', $value['total']);
+        
+        $addon=explode(',',$this->input->post('addon_service_id'));
+        $qty=explode(',',$this->input->post('qty'));
+        $price=explode(',',$this->input->post('price'));
+        $total=explode(',',$this->input->post('total'));
+        
+        if(!empty($addon)){
+             foreach ($addon as $key => $value) :
+                $this->db->set('order_id', $order_id);
+                $this->db->set('addon_service_id', $value);
+                $this->db->set('qty', $qty[$key]);
+                $this->db->set('price', $price[$key]);
+                $this->db->set('total', $total[$key]);
+                $this->db->insert('order_details');
+            endforeach;
         }
     }
 

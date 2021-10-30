@@ -50,7 +50,7 @@
 							</div>
 							<div class="form-group col-md-4">
 								<label> Payment Flow </label>
-								<select class="form-control payment_flow" name="payment_status" aria-label="Default select example">
+								<select class="form-control payment_flow" name="plan_status" aria-label="Default select example">
 									<option value="1">Monthly</option>
 									<option value="12" >Yearly</option>
 								</select>	
@@ -187,18 +187,19 @@
 
 <script src="<?php echo base_url()."assets/"; ?>plugins/jquery/jquery.min.js"></script>
 <script>
+	$('.box_addon').addClass('hide');
 
-	// $('body').on('click','.btn_addon_show',function(){
-	// 	$('.box_addon').removeClass('hide');
-	// 	$('.btn_addon_show').addClass('hide');
-	// 	$('.btn_addon_hide').removeClass('hide');
-	// });
+	$('body').on('click','.btn_addon_show',function(){
+		$('.box_addon').removeClass('hide');
+		$('.btn_addon_show').addClass('hide');
+		$('.btn_addon_hide').removeClass('hide');
+	});
 
-	// $('body').on('click','.btn_addon_hide',function(){
-	// 	$('.box_addon').addClass('hide');
-	// 	$('.btn_addon_hide').addClass('hide');
-	// 	$('.btn_addon_show').removeClass('hide');
-	// });
+	$('body').on('click','.btn_addon_hide',function(){
+		$('.box_addon').addClass('hide');
+		$('.btn_addon_hide').addClass('hide');
+		$('.btn_addon_show').removeClass('hide');
+	});
 
 
 	$('body').on('click','.addrow',function(){

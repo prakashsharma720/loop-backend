@@ -77,33 +77,73 @@ public function login($data)
     // Insert orders data in database
     public function orders_insert($data) 
     {
+		$order_date = $data['order_date'];
+		if($data['plan_status']==1) {
+			$data['expiry_date'] = date('Y-m-d', strtotime($order_date. ' + 28 days'));
+		}
+		if($data['plan_status']==3) {
+			$data['expiry_date'] = date('Y-m-d', strtotime($order_date. ' + 84 days'));
+		}
+		if($data['plan_status']==6) {
+			$data['expiry_date'] = date('Y-m-d', strtotime($order_date. ' + 168 days'));
+		}
+		if($data['plan_status']==12) {
+			$data['expiry_date'] = date('Y-m-d', strtotime($order_date. ' + 336 days'));
+		}
         $this->db->insert('orders', $data);
-        $id = $this->db->insert_id();
-        if ($this->db->affected_rows() > 0) {
+        $order_id = $this->db->insert_id();
+		if(!empty($this->input->post('addon_service_id'))) {
+			$this->addOrderDetails($order_id);
+		}
+        
+		if ($this->db->affected_rows() > 0) 
+		{
             return true;
         }
-        else { 
+        else 
+		{ 
             return false;
+        }
+    }
+	public function addOrderDetails($order_id){
+        $this->db->where('order_id', $order_id);
+        $this->db->delete('order_details');
+		
+        $addon = $this->input->post('addon_service_id');
+        
+        if(!empty($addon)){
+             foreach ($addon as $key => $value) :
+                $this->db->set('order_id', $order_id);
+                $this->db->set('addon_service_id', $value);
+                $this->db->set('qty', $this->input->post('qty')[$key]);
+                $this->db->set('price', $this->input->post('price')[$key]);
+                $this->db->set('total', $this->input->post('amount')[$key]);
+                $this->db->insert('order_details');
+            endforeach;
         }
     }
 
     // view orders data from database
     public function orders_list() 
-		{
-			$this->db->select('orders.*');
-			$this->db->from('orders');
-
-			// $this->db->join('orders_details', 'orders.id = orders_details.orders_id','left'); 
-			
-			$this->db->where('orders.flag','0');
-			$this->db->order_by("orders.id", "asc");
-
-			$query =  $this->db->get()->result_array();
-			//print_r($query);exit;
-			return $query;
+	{
+		$this->db->select('orders.*, subscription.title as subscription_plan_id, users.name as user_id, users.email as user_email, users.mobile as user_mobile, subscription.price as subscription_price');
+		$this->db->from('orders'); 
+		$this->db->join('subscription', 'orders.subscription_plan_id = subscription.id','left'); 
+		$this->db->join('users', 'orders.user_id = users.id','left'); 
+		$this->db->where('orders.flag','0');
+		$this->db->order_by("orders.id", "asc");
+		$query =  $this->db->get()->result_array();
+		$i=0;
+		foreach ($query as $i => $value) {
+			$this->db->select('order_details.*, addon_services.title as addon_service_id');
+			$this->db->join('addon_services', 'order_details.addon_service_id = addon_services.id','left');
+			$this->db->from('order_details');
+			$this->db->where(['order_details.order_id'=>$value['id']]);
+			$details=$this->db->get()->result_array();
+			$query[$i]['order_details']=$details;
 		}
-    
-    
+		return $query;
+	}
 
         function deleteRecord($id)
 		{

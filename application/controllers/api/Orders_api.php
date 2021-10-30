@@ -35,6 +35,20 @@ class Orders_api extends CI_Controller {
 
 	function insert()
 	{
+	    
+	   // echo "<pre>";
+	   // print_r($_POST);
+	   // $addon=explode(',',$this->input->post('addon_service_id'));
+	   // $qty=explode(',',$this->input->post('qty'));
+	   // $price=explode(',',$this->input->post('price'));
+	   // $total=explode(',',$this->input->post('total'));
+	   // print_r($addon);
+	   // print_r($qty);
+	   // print_r($price);
+	   // print_r($total);
+	   // exit;
+
+	    
 		$this->form_validation->set_rules('order_id', 'Order ID', 'required');
 		if($this->form_validation->run())
 		{

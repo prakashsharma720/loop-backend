@@ -12,7 +12,7 @@ $data=explode('?', $current_page);
     margin: 1px;
     padding: 1px;
   }
-  .col-sm-6 ,.col-md-6{
+  .col-sm-6 ,.col-md-4{
       float: left;
   }
 </style>
@@ -56,17 +56,12 @@ $data=explode('?', $current_page);
           <thead>
             <tr>
               <th><input type="checkbox" id="master"></th>
-              <th >Sr.No.</th>
-              <th style="white-space: nowrap;"> Order Date </th>
+              <th>Sr.No.</th>
+              <th style="white-space: nowrap;"> Date </th>
               <th style="white-space: nowrap;"> Order ID </th>
               <th style="white-space: nowrap;"> User </th>
-              <th style="white-space: nowrap;"> Subscription ID </th>
-              <th style="white-space: nowrap;"> Amount </th>
-              <!-- <th style="white-space: nowrap;"> Other Tax </th> 
-              <th style="white-space: nowrap;"> Grand Total </th> 
-              <th style="white-space: nowrap;"> Payment Terms </th>
-              <th style="white-space: nowrap;"> Payment Status </th>  -->
-
+              <th style="white-space: nowrap;"> Subscription </th>
+              <th style="white-space: nowrap;"> Grand Total </th>
               <th style="white-space: nowrap;width: 20%;"> Action Button</th>
             </tr>
 
@@ -76,23 +71,23 @@ $data=explode('?', $current_page);
 
            <?php
           $i=1;foreach($orders as $obj){ ?>
-
             <tr>
                 <td><input type="checkbox" class="sub_chk" value="<?php echo $obj['id']; ?>" /></td>
                 <td><?php echo $i;?></td>
-                <td><?php echo $obj['order_date']; ?></td>
+                <td style="white-space: nowrap;"><?php echo $obj['order_date']; ?></td>
                 <td><?php echo $obj['order_id']; ?></td>
                 <td><?php echo $obj['user_id']; ?></td>
                 <td><?php echo $obj['subscription_plan_id']; ?></td>
-                <td><?php echo $obj['amount']; ?></td>
+                <td><?php echo $obj['grand_total']; ?></td>
                 <td>
-                  <a class="btn btn-xs btn-info btnEdit" data-toggle="modal" data-target="#view<?php echo $obj['id'];?>"><i style="color:#fff;"class="fa fa-eye"></i></a>
+									<a class="btn btn-xs btn-info btnEdit" target="_blank" href="<?php echo base_url(); ?>Orders_panel/order_pdf/<?php echo $obj['id'];?>"><i style="color:#fff;"class="fa fa-file-pdf-o"></i></a>
+									<a class="btn btn-xs btn-info btnEdit" data-toggle="modal" data-target="#view<?php echo $obj['id'];?>"><i style="color:#fff;"class="fa fa-eye"></i></a>
                   <a class="btn btn-xs btn-primary btnEdit" href="<?php echo base_url(); ?>Orders_panel/edit/<?php echo $obj['id'];?>"><i class="fa fa-edit"></i></a>
                   <a class="btn btn-xs btn-danger btnEdit" data-toggle="modal" data-target="#delete<?php echo $obj['id'];?>"><i style="color:#fff;"class="fa fa-trash"></i></a>
                 </td>
                   <!-- Model for details -->
                   <div class="modal fade" id="view<?php echo $obj['id'];?>" role="dialog">
-                    <div class="modal-dialog">
+                    <div class="modal-dialog modal-lg">
                       <!-- Modal content-->
                       <div class="modal-content">
                           <div class="modal-header">
@@ -111,32 +106,55 @@ $data=explode('?', $current_page);
                                   </div>
                                   <div class="col-md-4">
                                       <label class="control-label"> Subscription Plan : </label>
+																			<br>
                                       <span><?php echo $obj['subscription_plan_id']; ?></span>
                                   </div>
-                              </div>
-                              <div class="row">
-                                <div class="col-md-4">
+                                	<div class="col-md-4">
                                       <label class="control-label"> Amount : </label>
                                       <span><?php echo $obj['amount']; ?></span>
-                                  </div>
-                                  <div class="col-md-4">
-                                      <label class="control-label"> Other Tax : </label>
-                                      <span><?php echo $obj['other_tax']; ?></span>
                                   </div>
                                   <div class="col-md-4">
                                       <label class="control-label"> Grand Total : </label>
                                       <span><?php echo $obj['grand_total']; ?></span>
                                   </div>
-                              </div>
-                              <div class="row">
-                                <div class="col-md-6">
+                                 	<div class="col-md-4">
                                       <label class="control-label"> Payment Terms : </label>
                                       <span><?php echo $obj['payment_terms']; ?></span>
                                   </div>
-                                  <div class="col-md-6">
+                                 	<div class="col-md-4">
+                                      <label class="control-label"> Plan Type : </label>
+																			<?php 
+																				if($obj['plan_status']=='1') {$obj['plan_status']  = "Monthly"; }
+																				if($obj['plan_status']=='3') {$obj['plan_status']  = "Quarterly"; }
+																				if($obj['plan_status']=='4') {$obj['plan_status']  = "Half Yearly"; }
+																				if($obj['plan_status']=='12') {$obj['plan_status'] = "Yearly"; }
+																			?>
+                                      <span><?php echo $obj['plan_status']; ?></span>
+                                  </div>
+                                  <div class="col-md-4">
                                       <label class="control-label"> Payment Status : </label>
+																			<?php 
+																				if($obj['payment_status']=='1') {$obj['payment_status']='Pending';}
+																				if($obj['payment_status']=='2') {$obj['payment_status']='Success';}
+																			?>
                                       <span><?php echo $obj['payment_status']; ?></span>
                                   </div>
+                                 	<div class="col-md-4">
+                                      <label class="control-label"> Expiry Date : </label>
+                                      <span><?php echo $obj['expiry_date']; ?></span>
+                                  </div>
+
+																	<hr>
+
+																	<?php $j=1;foreach($obj['order_details'] as $order_details){ ?>
+                                    <hr>
+                                    <div class="col-md-12 col-sm-12 "> <label class="control-label"> <hr> <?= $j ?>. Addon Service Details : <hr> </label></div>                                    
+                                    <div class="col-md-4"> <label class="control-label"> Service : </label> <span><?php echo $order_details['addon_service_id']; ?></span> </div>
+               											<div class="col-md-2"> <label class="control-label"> Qty. : </label> <span><?php echo $order_details['qty']; ?></span> </div>
+                                    <div class="col-md-3"> <label class="control-label"> Price : </label> <span><?php echo $order_details['price']; ?></span> </div>
+                                    <div class="col-md-3"> <label class="control-label"> Total : </label> <span><?php echo number_format(round($order_details['total'], 1 ),2); ?></span> </div>
+                                  <?php $j++; } ?>
+
                               </div>
                             </div> <!-- Modal body closed-->
                             <div class="modal-footer">

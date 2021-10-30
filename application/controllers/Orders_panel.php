@@ -22,35 +22,37 @@ Class Orders_panel extends CI_Controller
         // Load form helper library
         $this->load->helper('form');
         $this->load->helper('url');
-
         // new security feature
         $this->load->helper('security');
 
         // Load form validation library
         $this->load->library('form_validation');
-
+		$this->load->library('Pdf');
         $this->load->library('encryption');
-
         // Load session library
         $this->load->library('session');
-
         $this->load->library('template');
 
         // Load database
         $this->load->model('Orders_model');
         //$this->load->library('excel');
     }
-
     //Orders View
 	public function index() 
 	{
         $data['title'] = 'Orders List';
-		
 		$data['orders'] = $this->Orders_model->orders_list();
-
-		$this->template->load('template','orders_list',$data);       
+		$this->template->load('template','orders_list',$data);
 	}
-
+    //Orders PDF View
+	public function order_pdf() 
+	{
+		$id              = $this->uri->segment('3');
+		$data['order_list']  = $this->Orders_model->orders_list($id);
+		//echo"<pre>";print_r($data);exit;
+        $html            = $this->load->view('order_details_pdf', $data, true);
+        $this->pdf->createPDF($html, 'order_details', false);
+	}
     //Add Record View
     public function add() 
     {
@@ -86,23 +88,25 @@ Class Orders_panel extends CI_Controller
            $this->template->load('template','orders_add');   
        } 
        else 
-       {
+       {	
+		   if(empty($this->input->post('grand_total'))) {
+				$grand_total = $this->input->post('plan_total');
+	   		} else {
+				$grand_total = $this->input->post('grand_total');
+			}
            $data = array(
             'order_date' => date('Y-m-d',strtotime($this->input->post('order_date'))),
             'order_id' => $this->input->post('order_id'),  
             'user_id' => $this->input->post('user_id'),  
             'subscription_plan_id' => $this->input->post('subscription_plan_id'),
-            'amount' => $this->input->post('amount'),
-            'other_tax' => $this->input->post('other_tax'),  
-            'grand_total' => $this->input->post('amount') + $this->input->post('other_tax'),
-            // 'grand_total' => $this->input->post('grand_total'),  
+            'amount' => $this->input->post('plan_total'),
+            'grand_total' => $grand_total,
             'payment_terms' => $this->input->post('payment_terms'),  
             'payment_status' => $this->input->post('payment_status'),  
+            'plan_status' => $this->input->post('plan_status'),  
             'created_by' => $this->session->userdata['logged_in']['id'],
-			'edited_by' => $this->session->userdata['logged_in']['id'],
-
            );
-           
+		   
            $result = $this->Orders_model->orders_insert($data);
 
            if ($result == TRUE) {
@@ -159,6 +163,7 @@ Class Orders_panel extends CI_Controller
     //Edit Record to Database
     public function editOrders($id)
     {   
+		echo"<pre>";print_r($_POST);exit;
         $data['id'] = $id;
 
 		$this->form_validation->set_rules('order_id', 'Order ID', 'required');
