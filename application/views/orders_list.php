@@ -42,7 +42,6 @@ $data=explode('?', $current_page);
        <div class="pull-right error_msg">
           <a href="<?php echo base_url(); ?>Orders_panel/add" class="btn btn-success" data-toggle="tooltip" title="New order"><i class="fa fa-plus"></i></a>
           <button class="btn btn-default" data-toggle="tooltip" title="Refresh" onclick="location.reload();"><i class="fa fa-refresh"></i></button>
-          <button class="btn btn-danger delete_all" data-toggle="tooltip" title="Bulk Delete" ><i class="fa fa-trash"></i></button>  
       </div>
     </div> <!-- /.card-body -->
     
@@ -55,7 +54,6 @@ $data=explode('?', $current_page);
 
           <thead>
             <tr>
-              <th><input type="checkbox" id="master"></th>
               <th>Sr.No.</th>
               <th style="white-space: nowrap;"> Date </th>
               <th style="white-space: nowrap;"> Order ID </th>
@@ -72,12 +70,11 @@ $data=explode('?', $current_page);
            <?php
           $i=1;foreach($orders as $obj){ ?>
             <tr>
-                <td><input type="checkbox" class="sub_chk" value="<?php echo $obj['id']; ?>" /></td>
                 <td><?php echo $i;?></td>
                 <td style="white-space: nowrap;"><?php echo $obj['order_date']; ?></td>
                 <td><?php echo $obj['order_id']; ?></td>
-                <td><?php echo $obj['user_id']; ?></td>
-                <td><?php echo $obj['subscription_plan_id']; ?></td>
+                <td><?php echo $obj['user_name']; ?></td>
+                <td><?php echo $obj['subscription_plan_title']; ?></td>
                 <td><?php echo $obj['grand_total']; ?></td>
                 <td>
 									<a class="btn btn-xs btn-info btnEdit" target="_blank" href="<?php echo base_url(); ?>Orders_panel/order_pdf/<?php echo $obj['id'];?>"><i style="color:#fff;"class="fa fa-file-pdf-o"></i></a>
@@ -107,7 +104,7 @@ $data=explode('?', $current_page);
                                   <div class="col-md-4">
                                       <label class="control-label"> Subscription Plan : </label>
 																			<br>
-                                      <span><?php echo $obj['subscription_plan_id']; ?></span>
+                                      <span><?php echo $obj['subscription_plan_title']; ?></span>
                                   </div>
                                 	<div class="col-md-4">
                                       <label class="control-label"> Amount : </label>
@@ -149,7 +146,7 @@ $data=explode('?', $current_page);
 																	<?php $j=1;foreach($obj['order_details'] as $order_details){ ?>
                                     <hr>
                                     <div class="col-md-12 col-sm-12 "> <label class="control-label"> <hr> <?= $j ?>. Addon Service Details : <hr> </label></div>                                    
-                                    <div class="col-md-4"> <label class="control-label"> Service : </label> <span><?php echo $order_details['addon_service_id']; ?></span> </div>
+                                    <div class="col-md-4"> <label class="control-label"> Service : </label> <span><?php echo $order_details['addon_service_title']; ?></span> </div>
                											<div class="col-md-2"> <label class="control-label"> Qty. : </label> <span><?php echo $order_details['qty']; ?></span> </div>
                                     <div class="col-md-3"> <label class="control-label"> Price : </label> <span><?php echo $order_details['price']; ?></span> </div>
                                     <div class="col-md-3"> <label class="control-label"> Total : </label> <span><?php echo number_format(round($order_details['total'], 1 ),2); ?></span> </div>
@@ -184,8 +181,7 @@ $data=explode('?', $current_page);
                                 </div>
                             </form>
                          </div>
-                    </div><!-- Model Closed -->
-              
+                    </div><!-- Model Closed -->              
               </tr>
             <?php  $i++;} ?>
           </tbody>

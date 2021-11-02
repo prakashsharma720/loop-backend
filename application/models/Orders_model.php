@@ -108,9 +108,7 @@ public function login($data)
 	public function addOrderDetails($order_id){
         $this->db->where('order_id', $order_id);
         $this->db->delete('order_details');
-		
         $addon = $this->input->post('addon_service_id');
-        
         if(!empty($addon)){
              foreach ($addon as $key => $value) :
                 $this->db->set('order_id', $order_id);
@@ -126,7 +124,7 @@ public function login($data)
     // view orders data from database
     public function orders_list() 
 	{
-		$this->db->select('orders.*, subscription.title as subscription_plan_id, users.name as user_id, users.email as user_email, users.mobile as user_mobile, subscription.price as subscription_price');
+		$this->db->select('orders.*, subscription.title as subscription_plan_title, users.name as user_name, users.id as user_id, users.email as user_email, users.mobile as user_mobile, subscription.price as subscription_price');
 		$this->db->from('orders'); 
 		$this->db->join('subscription', 'orders.subscription_plan_id = subscription.id','left'); 
 		$this->db->join('users', 'orders.user_id = users.id','left'); 
@@ -135,7 +133,7 @@ public function login($data)
 		$query =  $this->db->get()->result_array();
 		$i=0;
 		foreach ($query as $i => $value) {
-			$this->db->select('order_details.*, addon_services.title as addon_service_id');
+			$this->db->select('order_details.*, addon_services.title as addon_service_title');
 			$this->db->join('addon_services', 'order_details.addon_service_id = addon_services.id','left');
 			$this->db->from('order_details');
 			$this->db->where(['order_details.order_id'=>$value['id']]);
@@ -145,28 +143,51 @@ public function login($data)
 		return $query;
 	}
 
-        function deleteRecord($id)
-		{
-			$data=array('flag'=>'1');
-			$this->db->set('flag','flag',false);
-			$this->db->where('id',$id);
-
-			if($this->db->update('orders', $data)){
-				return true;
-			}
+    // view orders data from database
+    public function orders_list_for_edit($id) 
+	{
+		$this->db->select('orders.*, subscription.title as subscription_plan_title, users.name as user_name, users.id as user_id, users.email as user_email, users.mobile as user_mobile, subscription.price as subscription_price');
+		$this->db->from('orders'); 
+		$this->db->join('subscription', 'orders.subscription_plan_id = subscription.id','left'); 
+		$this->db->join('users', 'orders.user_id = users.id','left'); 
+		$this->db->where(['orders.flag'=>'0', 'orders.id'=>$id]);
+		$this->db->order_by("orders.id", "asc");
+		$query =  $this->db->get()->result_array();
+		$i=0;
+		foreach ($query as $i => $value) {
+			$this->db->select('order_details.*, addon_services.title as addon_service_title');
+			$this->db->join('addon_services', 'order_details.addon_service_id = addon_services.id','left');
+			$this->db->from('order_details');
+			$this->db->where(['order_details.order_id'=>$value['id']]);
+			$details=$this->db->get()->result_array();
+			$query[$i]['order_details']=$details;
 		}
+		return $query;
+	}
+
+	function deleteRecord($id)
+	{
+		$data=array('flag'=>'1');
+		$this->db->set('flag','flag',false);
+		$this->db->where('id',$id);
+		if($this->db->update('orders', $data)){
+			$this->db->where('order_id', $id);
+			$this->db->delete('order_details');
+			return true;
+		}
+	}
 
     function editRecord($data, $id)
-        {
-			$this->db->select('orders.*');
-            $this->db->select('*');
-			$this->db->from('orders');
-			$this->db->where('id', $id);
-
-            if($this->db->update('orders', $data)){
-				return true;
-			}
+	{
+		$this->db->select('orders.*');
+		$this->db->select('*');
+		$this->db->from('orders');
+		$this->db->where('id', $id);
+		if($this->db->update('orders', $data)){
+			$this->addOrderDetails($id);
+			return true;
 		}
+	}
 
         function getUsers() { 
             $result = $this->db->select('id, name')->get('users')->result_array(); 

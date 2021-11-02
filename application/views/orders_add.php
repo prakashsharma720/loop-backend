@@ -46,7 +46,7 @@
 						</div>	
 							<div class="form-group col-md-4">
 								<label name="amount"> Amount </label>
-								<input type="text" name="amount" class="form-control amount" value="" readonly="readonly" placeholder="Subscription Plan Amount">
+								<input type="text" name="plan_price" class="form-control amount" value="" readonly="readonly" placeholder="Subscription Plan Amount">
 							</div>
 							<div class="form-group col-md-4">
 								<label> Payment Flow </label>

@@ -99,6 +99,7 @@ Class Orders_panel extends CI_Controller
             'order_id' => $this->input->post('order_id'),  
             'user_id' => $this->input->post('user_id'),  
             'subscription_plan_id' => $this->input->post('subscription_plan_id'),
+            'plan_price' => $this->input->post('plan_price'),
             'amount' => $this->input->post('plan_total'),
             'grand_total' => $grand_total,
             'payment_terms' => $this->input->post('payment_terms'),  
@@ -131,7 +132,7 @@ Class Orders_panel extends CI_Controller
 
             }
             echo $this->session->set_flashdata('success', 'Order deleted Successfully !');
-        }else{
+        } else {
             $id = $this->uri->segment('3');
             $this->Orders_model->deleteRecord($id);
             $this->session->set_flashdata('success', 'Order deleted Successfully !');
@@ -141,21 +142,15 @@ Class Orders_panel extends CI_Controller
 
     //Edit View
     public function edit($id) { 
-
-		$id = $this->uri->segment('3');
-
-        $data['title']='Edit Order';
-
-		$query = $this->db->get_where("orders",array("id"=>$id));
-        $data['current'] = $query->row();
-       	//print_r($data['current'][0]->vendor_code);exit;
-        
-        $data['id'] = $id;
-
-        $data['users']=$this->Orders_model->getUsers();
-        $data['subscription']=$this->Orders_model->getSubscription();
-        $data['price']=$this->Orders_model->getPrice();
-
+		$id                    = $this->uri->segment('3');
+        $data['title']         = 'Edit Order';
+		$data['current']       = $this->Orders_model->orders_list_for_edit($id);
+        $data['id']            = $id;
+        $data['users']         = $this->Orders_model->getUsers();           // For Select User for Place Order
+        $data['subscription']  = $this->Orders_model->getSubscription();    // For Subscription Drop-down
+        $data['price']         = $this->Orders_model->getPrice();           
+        $data['addonservices'] = $this->Orders_model->getAddonServices();   // For Addon Services Drop-down
+		//echo"<pre>";print_r($data);exit;
         $this->template->load('template','orders_edit',$data);
 	}
 
@@ -163,53 +158,53 @@ Class Orders_panel extends CI_Controller
     //Edit Record to Database
     public function editOrders($id)
     {   
-		echo"<pre>";print_r($_POST);exit;
         $data['id'] = $id;
-
 		$this->form_validation->set_rules('order_id', 'Order ID', 'required');
-        
         $user_id=$this->input->post('user_id');
-		$subscription_plan_id=$this->input->post('subscription_plan_id');
-        $amount=$this->input->post('amount');
+		$login_id=$this->session->userdata['logged_in']['id'];
+		if(empty($this->input->post('grand_total'))) {
+			$grand_total = $this->input->post('plan_total');
+		   } else {
+			$grand_total = $this->input->post('grand_total');
+		}
+		$data = array();
+		if(!empty($this->input->post('order_date'))) {
+			$data['order_date'] = date('Y-m-d',strtotime($this->input->post('order_date')));
+		}
+		if(!empty($this->input->post('order_id'))) {
+			$data['order_id'] = $this->input->post('order_id');
+		}
+		if(!empty($this->input->post('user_id'))) {
+			$data['user_id'] = $this->input->post('user_id');
+		}
+		if(!empty($this->input->post('plan_price'))) {
+			$data['plan_price'] = $this->input->post('plan_price');
+		}
+		if(!empty($this->input->post('plan_total'))) {
+			$data['amount'] = $this->input->post('plan_total');
+		}
+		if(!empty($grand_total)) {
+			$data['grand_total'] = $this->input->post('grand_total');
+		}
+		if(!empty($this->input->post('payment_terms'))) {
+			$data['payment_terms'] = $this->input->post('payment_terms');
+		}
+		if(!empty($this->input->post('payment_status'))) {
+			$data['payment_status'] = $this->input->post('payment_status');
+		}
+		if(!empty($this->input->post('plan_status'))) {
+			$data['plan_status'] = $this->input->post('plan_status');
+		}
+		$data['edited_by'] = $this->session->userdata['logged_in']['id'];
 
-		if ($this->form_validation->run() == FALSE) 
-		{
-			if(isset($this->session->userdata['logged_in'])){
-			    $this->edit($id);
-			//$this->load->view('admin_page');
-			}else{
-			    $this->load->view('login_form');
-			}
-		} 
-		else 
-		{
-			$login_id=$this->session->userdata['logged_in']['id'];
-
-			$data = array(
-                'order_date' => date('Y-m-d',strtotime($this->input->post('order_date'))),
-                'order_id' => $this->input->post('order_id'),  
-                'user_id' => $this->input->post('user_id'),  
-                'subscription_plan_id' => $this->input->post('subscription_plan_id'),
-                'amount' => $this->input->post('amount'),
-                'other_tax' => $this->input->post('other_tax'),  
-                'grand_total' => $this->input->post('amount') + $this->input->post('other_tax'),
-                // 'grand_total' => $this->input->post('grand_total'),  
-                'payment_terms' => $this->input->post('payment_terms'),  
-                'payment_status' => $this->input->post('payment_status'),  
-                'created_by' => $this->session->userdata['logged_in']['id'],
-                'edited_by' => $this->session->userdata['logged_in']['id']
-			);
-
-			$result = $this->Orders_model->editRecord($data,$id);
-			//echo $result;exit;
-
-			if ($result == TRUE) {
-                $this->session->set_flashdata('success', 'Order Updated Successfully !');
-                redirect('Orders_panel/index','refresh');
-			}else {
-                $this->session->set_flashdata('failed', 'Order Updating Failed !');
-                redirect('Orders_panel/index','refresh');
-			}
+		$result = $this->Orders_model->editRecord($data,$id);
+		
+		if ($result == TRUE) {
+			$this->session->set_flashdata('success', 'Order Updated Successfully !');
+			redirect('Orders_panel/index','refresh');
+		}else {
+			$this->session->set_flashdata('failed', 'Order Updating Failed !');
+			redirect('Orders_panel/index','refresh');
 		}
 	}
 
