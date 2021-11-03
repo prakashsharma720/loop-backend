@@ -22,12 +22,12 @@ class Orders_api extends CI_Controller {
 
 	function index()
 	{
-		$data = $this->Orders_api_model->fetch_all();
+		$data = $this->Orders_api_model->orders_list();
 
 		$array = array(
 			'success' => true,
 			'Message' => 'Orders Detail !',
-			'result' => $data->result_array()
+			'result' => $data
 		);
 
 		echo json_encode($array);

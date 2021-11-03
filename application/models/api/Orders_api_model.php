@@ -46,7 +46,42 @@ class Orders_api_model extends CI_Model
 		$this->db->order_by('id');
 		return $this->db->get('orders');
 	}
-
+    // view orders data from database
+    function orders_list() 
+	{
+		$this->db->select('orders.*, subscription.title as subscription_plan_title, users.name as user_name, users.id as user_id, users.email as user_email, users.mobile as user_mobile, subscription.price as subscription_price');
+		$this->db->from('orders'); 
+		$this->db->join('subscription', 'orders.subscription_plan_id = subscription.id','left'); 
+		$this->db->join('users', 'orders.user_id = users.id','left');		
+        if(!empty($this->input->post('user_id'))){
+			$this->db->where('orders.user_id',$this->input->post('user_id'));
+	    }
+		if(!empty($this->input->post('order_id'))){
+			$this->db->where('orders.order_id',$this->input->post('order_id'));
+	    }
+		if(!empty($this->input->post('id'))){
+			$this->db->where('orders.id',$this->input->post('id'));
+	    }
+		if(!empty($this->input->post('from_date'))){
+			$this->db->where('orders.order_date >=',$this->input->post('from_date'));
+	    }
+		if(!empty($this->input->post('upto_date'))){
+			$this->db->where('orders.order_date <=',$this->input->post('upto_date'));
+	    }
+		$this->db->where('orders.flag','0');
+		$this->db->order_by("orders.id", "asc");
+		$query =  $this->db->get()->result_array();
+		$i=0;
+		foreach ($query as $i => $value) {
+			$this->db->select('order_details.*, addon_services.title as addon_service_title');
+			$this->db->join('addon_services', 'order_details.addon_service_id = addon_services.id','left');
+			$this->db->from('order_details');
+			$this->db->where('order_details.order_id', $value['id']);
+			$details=$this->db->get()->result_array();
+			$query[$i]['order_details']=$details;
+		}
+		return $query;
+	}
 	function insert_api($data)
 	{
 		$this->db->insert('orders', $data);
