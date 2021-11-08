@@ -98,6 +98,7 @@ public function login($data)
         
 		if ($this->db->affected_rows() > 0) 
 		{
+			$this->sendMail($order_id);
             return true;
         }
         else 
@@ -189,45 +190,146 @@ public function login($data)
 		}
 	}
 
-        function getUsers() { 
-            $result = $this->db->select('id, name')->get('users')->result_array(); 
-            $states = array(); 
-            $states[''] = 'Select User...'; 
-            foreach($result as $r) { 
-                $states[$r['id']] = $r['name']; 
-            } 
-            return $states; 
-        } 
+	function getUsers() { 
+		$result = $this->db->select('id, name')->get('users')->result_array(); 
+		$states = array(); 
+		$states[''] = 'Select User...'; 
+		foreach($result as $r) { 
+			$states[$r['id']] = $r['name']; 
+		} 
+		return $states; 
+	} 
 
-       function getSubscription() { 
-        $result = $this->db->select('id, title, price')->get('subscription')->result_array(); 
-        // $states = array(); 
-        // $states[''] = 'Select Subscription...'; 
-        // foreach($result as $r) { 
-        //     $states[$r['id']] = $r['title']; 
-        // } 
-        return $result; 
-        } 
-        function getAddonServices() { 
-        $result = $this->db->select('id, title, price')->get('addon_services')->result_array(); 
-        // $states = array(); 
-        // $states[''] = 'Select Subscription...'; 
-        // foreach($result as $r) { 
-        //     $states[$r['id']] = $r['title']; 
-        // } 
-        return $result; 
-        }
+	function getSubscription() { 
+	$result = $this->db->select('id, title, price')->get('subscription')->result_array(); 
+	// $states = array(); 
+	// $states[''] = 'Select Subscription...'; 
+	// foreach($result as $r) { 
+	//     $states[$r['id']] = $r['title']; 
+	// } 
+	return $result; 
+	} 
+	function getAddonServices() { 
+	$result = $this->db->select('id, title, price')->get('addon_services')->result_array(); 
+	// $states = array(); 
+	// $states[''] = 'Select Subscription...'; 
+	// foreach($result as $r) { 
+	//     $states[$r['id']] = $r['title']; 
+	// } 
+	return $result; 
+	}
 
-        function getPrice() { 
-            $result = $this->db->select('id, title, price')->get('subscription')->result_array(); 
-            $states = array(); 
-            $states[''] = 'Select Amount...'; 
-            foreach($result as $r) { 
-                $states[$r['price']] = $r['price']; 
-            } 
-            return $states; 
-            }
+	function getPrice() { 
+	$result = $this->db->select('id, title, price')->get('subscription')->result_array(); 
+	$states = array(); 
+	$states[''] = 'Select Amount...'; 
+	foreach($result as $r) { 
+		$states[$r['price']] = $r['price']; 
+	} 
+	return $states; 
+	}
 
+	// Send mail to customer for order
+	function sendMail($id) {
+		$this->db->select('orders.*, subscription.title as subscription_plan_title, users.name as user_name, users.id as user_id, users.email as user_email, users.mobile as user_mobile, subscription.price as subscription_price');
+		$this->db->from('orders'); 
+		$this->db->join('subscription', 'orders.subscription_plan_id = subscription.id','left'); 
+		$this->db->join('users', 'orders.user_id = users.id','left'); 
+		$this->db->where(['orders.flag'=>'0', 'orders.id'=>$id]);
+		$this->db->order_by("orders.id", "asc");
+		$query =  $this->db->get()->result_array();
+		$i=0;
+		foreach ($query as $i => $value) {
+			$this->db->select('order_details.*, addon_services.title as addon_service_title');
+			$this->db->join('addon_services', 'order_details.addon_service_id = addon_services.id','left');
+			$this->db->from('order_details');
+			$this->db->where(['order_details.order_id'=>$value['id']]);
+			$details=$this->db->get()->result_array();
+			$query[$i]['order_details']=$details;
+		}
+		$orderId                    = $query['0']['order_id'];
+		$customerName               = $query['0']['user_name'];
+		$customerEmail              = $query['0']['user_email'];
+		$subscription_plan_title    = $query['0']['subscription_plan_title'];
+		// plan duration
+		if($query['0']['plan_status']==1)  {$query['0']['plan_status']="Monthly";}
+		if($query['0']['plan_status']==3)  {$query['0']['plan_status']="Quarterly";}
+		if($query['0']['plan_status']==6)  {$query['0']['plan_status']="Half Yearly";}
+		if($query['0']['plan_status']==12) {$query['0']['plan_status']="Yearly";}
+
+		$plan_status                = $query['0']['plan_status'];
+		$grand_total                = $query['0']['grand_total'];
+		
+		$config = Array(
+		// For Server
+		    'protocol' => 'mail',
+			'smtp_host' => 'mail.muskowl.com',
+			'smtp_port' => 587,
+			'smtp_user' => 'hemendra@muskowl.com', // change it to yours
+			'smtp_pass' => '#hemendra@2021#', // change it to yours
+
+		// For Local
+		    // 'protocol' => 'smtp',
+    		// 'smtp_host' => 'ssl://smtp.googlemail.com',
+			// 'smtp_port' => 465,
+			// 'smtp_user' => 'hemendra.muskowl@gmail.com', // change it to yours
+			// 'smtp_pass' => 'hss4u@mo', // change it to yours
+
+			'mailtype' => 'html',
+			'charset' => 'iso-8859-1',	
+			'wordwrap' => TRUE
+		);
+		$message = 
+		'
+		<html>
+			<head>
+				<title>Order Successful !</title>
+			</head>
+			<body>
+			<p> <b> Thanks for subscription our plan </b> </p>
+			<p>You have subscribe this :</p>
+			<table>
+				<tr>
+					<td>Subcription ID</td>
+					<td>:</td>
+					<td><b> '.$orderId.'</b></td>
+				</tr>
+				<tr>
+					<td>Your Name</td>
+					<td>:</td>
+					<td><b> '.$customerName.' </b></td>
+				</tr>
+				<tr>
+					<td>Subscription Title</td>
+					<td>:</td>
+					<td><b> '.$subscription_plan_title.' </b></td>
+				</tr>
+				<tr>
+					<td>Subscription Status</td>
+					<td>:</td>
+					<td><b> '.$plan_status.' </b></td>
+				</tr>
+				<tr>
+					<td>Grand Total</td>
+					<td>:</td>
+					<td><b> $'.$grand_total.' </b></td>
+				</tr>
+			</table>
+			</body>
+		</html>
+		';
+		$this->load->library('email', $config);
+		$this->email->set_newline("\r\n");
+		$this->email->from('hemendra.muskowl@gmail.com'); // change it to yours
+		$this->email->to($customerEmail);// change it to yours
+		$this->email->subject('Order Successful');
+		$this->email->message($message);
+		if($this->email->send()) {
+		  return true;
+		} else {
+		 show_error($this->email->print_debugger());
+		}
+	}
     
 //Add to Cart Methods :---------------------------------------------------------------------------------------------------------------------
         
