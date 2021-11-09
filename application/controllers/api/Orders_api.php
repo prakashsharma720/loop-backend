@@ -69,15 +69,16 @@ class Orders_api extends CI_Controller {
 					'result' => $userCount
 				);
             }else{
-
+				$plan_price = $this->db->select('price')->get('subscription')->result_array();
+				$plan_price = $plan_price['0']['price'];
 				$data = array(
 					'order_date' => date('Y-m-d',strtotime($this->input->post('order_date'))),
 					'order_id' => $this->input->post('order_id'),  
 					'user_id' => $this->input->post('user_id'),  
 					'subscription_plan_id' => $this->input->post('subscription_plan_id'),
+					'plan_price' => $plan_price,
 					'amount' => $this->input->post('amount'),
-					'other_tax' => $this->input->post('other_tax'),  
-					'grand_total' => $this->input->post('amount') + $this->input->post('other_tax'),
+					'grand_total' => $this->input->post('amount'),
 					// 'grand_total' => $this->input->post('grand_total'),  
 					'payment_terms' => $this->input->post('payment_terms'),  
 					'payment_status' => $this->input->post('payment_status')

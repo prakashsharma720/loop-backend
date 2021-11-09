@@ -98,6 +98,7 @@ public function login($data)
         
 		if ($this->db->affected_rows() > 0) 
 		{
+			$this->insertNotif($order_id);
 			$this->sendMail($order_id);
             return true;
         }
@@ -105,6 +106,27 @@ public function login($data)
 		{ 
             return false;
         }
+    }
+    // Insert Notification in Database
+    public function insertNotif($order_id) {
+		// Get Details
+		$this->db->select('orders.*, subscription.title as subscription_plan_title, users.name as user_name, users.id as user_id, users.email as user_email, users.mobile as user_mobile, subscription.price as subscription_price');
+		$this->db->from('orders'); 
+		$this->db->join('subscription', 'orders.subscription_plan_id = subscription.id','left'); 
+		$this->db->join('users', 'orders.user_id = users.id','left'); 
+		$this->db->where(['orders.flag'=>'0', 'orders.id'=>$order_id]);
+		$this->db->order_by("orders.id", "asc");
+		$query    = $this->db->get()->result_array();
+		$user_id  = $query['0']['user_id'];
+		$order_id = $query['0']['order_id'];
+		// Data for Notification
+		$notifData['employee_id'] = $user_id;
+		$notifData['type']        = 'Order Create';
+		$notifData['subject']     = 'Place Order';
+		$notifData['message']     =  'Order Successful, Order ID : '.$order_id;
+		$notifData['datetime']    = date('Y-m-d H:i:s');
+		$notifData['status']      = '0';
+		$this->db->insert('notifications', $notifData);
     }
 	public function addOrderDetails($order_id){
         $this->db->where('order_id', $order_id);
@@ -238,15 +260,7 @@ public function login($data)
 		$this->db->where(['orders.flag'=>'0', 'orders.id'=>$id]);
 		$this->db->order_by("orders.id", "asc");
 		$query =  $this->db->get()->result_array();
-		$i=0;
-		foreach ($query as $i => $value) {
-			$this->db->select('order_details.*, addon_services.title as addon_service_title');
-			$this->db->join('addon_services', 'order_details.addon_service_id = addon_services.id','left');
-			$this->db->from('order_details');
-			$this->db->where(['order_details.order_id'=>$value['id']]);
-			$details=$this->db->get()->result_array();
-			$query[$i]['order_details']=$details;
-		}
+		
 		$orderId                    = $query['0']['order_id'];
 		$customerName               = $query['0']['user_name'];
 		$customerEmail              = $query['0']['user_email'];

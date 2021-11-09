@@ -85,9 +85,35 @@ class Orders_api_model extends CI_Model
 	function insert_api($data)
 	{
 		$this->db->insert('orders', $data);
-		$order_id = $this->input->post('order_id');
-		$this->addOrderDetails($order_id);
+		if ($this->db->affected_rows() > 0) 
+		{
+			$order_id = $this->db->insert_id();
+			$this->addOrderDetails($order_id);
+			$this->insertNotif($order_id);
+			$this->sendMail($order_id);
+        }
 	}
+    // Insert Notification in Database
+    public function insertNotif($order_id) {
+		// Get Details
+		$this->db->select('orders.*, subscription.title as subscription_plan_title, users.name as user_name, users.id as user_id, users.email as user_email, users.mobile as user_mobile, subscription.price as subscription_price');
+		$this->db->from('orders'); 
+		$this->db->join('subscription', 'orders.subscription_plan_id = subscription.id','left'); 
+		$this->db->join('users', 'orders.user_id = users.id','left'); 
+		$this->db->where(['orders.flag'=>'0', 'orders.id'=>$order_id]);
+		$query    = $this->db->get()->result_array();
+
+		$user_id  = $query['0']['user_id'];
+		$order_id = $query['0']['order_id'];
+		// Data for Notification
+		$notifData['employee_id'] = $user_id;
+		$notifData['type']        = 'Order Create';
+		$notifData['subject']     = 'Place Order';
+		$notifData['message']     =  'Order Successful : Order ID : '.$order_id;
+		$notifData['datetime']    = date('Y-m-d H:i:s');
+		$notifData['status']      = '0';
+		$this->db->insert('notifications', $notifData);
+    }
 
 	public function addOrderDetails($order_id){
         $this->db->where('order_id', $order_id);
@@ -167,6 +193,98 @@ class Orders_api_model extends CI_Model
 		return false;
 		}
     }
+	// Send mail to customer for order
+	function sendMail($order_id) {
+		$this->db->select('orders.*, subscription.title as subscription_plan_title, users.name as user_name, users.id as user_id, users.email as user_email, users.mobile as user_mobile, subscription.price as subscription_price');
+		$this->db->from('orders'); 
+		$this->db->join('subscription', 'orders.subscription_plan_id = subscription.id','left'); 
+		$this->db->join('users', 'orders.user_id = users.id','left'); 
+		$this->db->where(['orders.flag'=>'0', 'orders.id'=>$order_id]);
+		$query =  $this->db->get()->result_array();
+		
+		$orderId                    = $query['0']['order_id'];
+		$customerName               = $query['0']['user_name'];
+		$customerEmail              = $query['0']['user_email'];
+		$subscription_plan_title    = $query['0']['subscription_plan_title'];
+		// plan duration
+		if($query['0']['plan_status']==1)  {$query['0']['plan_status']="Monthly";}
+		if($query['0']['plan_status']==3)  {$query['0']['plan_status']="Quarterly";}
+		if($query['0']['plan_status']==6)  {$query['0']['plan_status']="Half Yearly";}
+		if($query['0']['plan_status']==12) {$query['0']['plan_status']="Yearly";}
+
+		$plan_status                = $query['0']['plan_status'];
+		$grand_total                = $query['0']['grand_total'];
+		
+		$config = Array(
+		// For Server
+		    'protocol' => 'mail',
+			'smtp_host' => 'mail.muskowl.com',
+			'smtp_port' => 587,
+			'smtp_user' => 'hemendra@muskowl.com', // change it to yours
+			'smtp_pass' => '#hemendra@2021#', // change it to yours
+
+		// For Local
+		    // 'protocol' => 'smtp',
+    		// 'smtp_host' => 'ssl://smtp.googlemail.com',
+			// 'smtp_port' => 465,
+			// 'smtp_user' => 'hemendra.muskowl@gmail.com', // change it to yours
+			// 'smtp_pass' => 'hss4u@mo', // change it to yours
+
+			'mailtype' => 'html',
+			'charset' => 'iso-8859-1',	
+			'wordwrap' => TRUE
+		);
+		$message = 
+		'
+		<html>
+			<head>
+				<title>Order Successful !</title>
+			</head>
+			<body>
+			<p> <b> Thanks for subscription our plan </b> </p>
+			<p>You have subscribe this :</p>
+			<table>
+				<tr>
+					<td>Subcription ID</td>
+					<td>:</td>
+					<td><b> '.$orderId.'</b></td>
+				</tr>
+				<tr>
+					<td>Your Name</td>
+					<td>:</td>
+					<td><b> '.$customerName.' </b></td>
+				</tr>
+				<tr>
+					<td>Subscription Title</td>
+					<td>:</td>
+					<td><b> '.$subscription_plan_title.' </b></td>
+				</tr>
+				<tr>
+					<td>Subscription Status</td>
+					<td>:</td>
+					<td><b> '.$plan_status.' </b></td>
+				</tr>
+				<tr>
+					<td>Grand Total</td>
+					<td>:</td>
+					<td><b> $'.$grand_total.' </b></td>
+				</tr>
+			</table>
+			</body>
+		</html>
+		';
+		$this->load->library('email', $config);
+		$this->email->set_newline("\r\n");
+		$this->email->from('hemendra.muskowl@gmail.com'); // change it to yours
+		$this->email->to($customerEmail);// change it to yours
+		$this->email->subject('Order Successful');
+		$this->email->message($message);
+		if($this->email->send()) {
+		  return true;
+		} else {
+		 show_error($this->email->print_debugger());
+		}
+	}
 
 //-------------------------------------------------Add To Cart Methods------------------------------------------------------------------------
 
