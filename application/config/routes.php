@@ -102,4 +102,6 @@ $route['Gallery_api/update'] = 'api/Gallery_api/update';
 $route['Gallery_api/fetch_single'] = 'api/Gallery_api/fetch_single';
 $route['Gallery_api/delete'] = 'api/Gallery_api/delete';
 
+//Notifications API Routes
+$route['Notification_api/index'] = 'api/Notification_api/index';
 
