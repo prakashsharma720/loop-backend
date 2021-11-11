@@ -35,25 +35,12 @@ class Orders_api extends CI_Controller {
 
 	function insert()
 	{
-	    
-	   // echo "<pre>";
-	   // print_r($_POST);
-	   // $addon=explode(',',$this->input->post('addon_service_id'));
-	   // $qty=explode(',',$this->input->post('qty'));
-	   // $price=explode(',',$this->input->post('price'));
-	   // $total=explode(',',$this->input->post('total'));
-	   // print_r($addon);
-	   // print_r($qty);
-	   // print_r($price);
-	   // print_r($total);
-	   // exit;
+	   //echo"<pre>";print_r($_POST);exit;
 
-	    
 		$this->form_validation->set_rules('order_id', 'Order ID', 'required');
 		if($this->form_validation->run())
 		{
 			$order_id = strip_tags($this->input->post('order_id'));
-
 			// Check if the given mobile already exists
             $con['returnType'] = 'count';
             $con['conditions'] = array(
@@ -79,14 +66,10 @@ class Orders_api extends CI_Controller {
 					'plan_price' => $plan_price,
 					'amount' => $this->input->post('amount'),
 					'grand_total' => $this->input->post('amount'),
-					// 'grand_total' => $this->input->post('grand_total'),  
 					'payment_terms' => $this->input->post('payment_terms'),  
 					'payment_status' => $this->input->post('payment_status')
 				);
-				// echo "<pre>";
-				// print_r($_POST);exit;
 				$this->Orders_api_model->insert_api($data);
-
 				$array = array(
 					'success' => true,
 					'message' => 'Order Inserted Successfully !',
@@ -103,7 +86,43 @@ class Orders_api extends CI_Controller {
 		}
 		echo json_encode($array);
 	}
+	// insert addon services
+	function addon_order_insert() 
+	{
+		$result = $this->Orders_api_model->addon_insert();
+		if($result=="True") {
+			$array = array(
+				'success' => true,
+				'message' => 'Addon Services Added Successfully!'
+			);
+		} else {
+			$array = array(
+				'success' => true,
+				'message' => 'Addon Services Not Added!'
+			);
+		}
+		echo json_encode($array);
+	}
+	// insert addon services
+	function addon_order_list() 
+	{
+		$result = $this->Orders_api_model->addon_order_list();
+		if(!empty($result)) {
+			$array = array(
+				'success' => true,
+				'message' => 'Addon Order List!',
+				'result'  => $result
+			);
+		} else {
+			$array = array(
+				'success' => true,
+				'message' => 'Addon Services Not Found!'
+			);
+		}
+		echo json_encode($array);
+	}
 	
+	// Get Single Order Details
 	function fetch_single()
 	{
 		$user_id = $this->input->post('user_id');

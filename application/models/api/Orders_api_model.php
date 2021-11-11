@@ -118,16 +118,7 @@ class Orders_api_model extends CI_Model
 	public function addOrderDetails($order_id){
         $this->db->where('order_id', $order_id);
         $this->db->delete('order_details');
-        
-        //  foreach ($this->input->post('addon_service')  as $key => $value) {
-        //     $this->db->set('order_id', $order_id);
-        //     $this->db->set('addon_service_id', $value['addon_service_id']);
-        //     $this->db->set('qty', $value['qty']);
-        //     $this->db->set('price', $value['price']);
-        //     $this->db->set('total', $value['total']);
-        //     $this->db->insert('order_details');
-        // }
-        
+
         $addon=explode(',',$this->input->post('addon_service_id'));
         $qty=explode(',',$this->input->post('qty'));
         $price=explode(',',$this->input->post('price'));
@@ -144,7 +135,67 @@ class Orders_api_model extends CI_Model
             endforeach;
         }
     }
+	public function addon_insert(){
+		if(!empty($this->input->post('order_date'))) {
+			$data['order_date'] = date('Y-m-d',strtotime($this->input->post('order_date')));
+		}
+		if(!empty($this->input->post('user_id'))) {
+			$data['user_id'] = $this->input->post('user_id');
+		}
+		if(!empty($this->input->post('addon_service_id'))) {
+			$data['addon_service_id'] = $this->input->post('addon_service_id');
+		}
+		if(!empty($this->input->post('price'))) {
+			$data['price'] = $this->input->post('price');
+		}
+		if(!empty($this->input->post('qty'))) {
+			$data['qty'] = $this->input->post('qty');
+		}
+		if(!empty($this->input->post('grand_total'))) {
+			$data['grand_total'] = $this->input->post('grand_total');
+		}
+		if(!empty($this->input->post('payment_terms'))) {
+			$data['payment_terms'] = $this->input->post('payment_terms');
+		}
+		if(!empty($this->input->post('payment_status'))) {
+			$data['payment_status'] = $this->input->post('payment_status');
+		}
+		if(!empty($this->input->post('user_id'))) {
+			$data['created_by'] = $this->input->post('user_id');
+		}
 
+        $this->db->insert('order_addons', $data);
+        $this->db->insert_id();
+        if ($this->db->affected_rows() > 0) {
+            return True;
+        }
+        else { 
+            return False;
+        }
+	}
+	// Get Addon Order's List
+	function addon_order_list() {
+		$this->db->select('order_addons.*, addon_services.title as addon_service_title, users.name as user_name, users.id as user_id, users.email as user_email, users.mobile as user_mobile, addon_services.price as addon_service_price');
+		$this->db->from('order_addons'); 
+		$this->db->join('addon_services', 'order_addons.addon_service_id = addon_services.id','left'); 
+		$this->db->join('users', 'order_addons.user_id = users.id','left');		
+        if(!empty($this->input->post('user_id'))){
+			$this->db->where('order_addons.user_id',$this->input->post('user_id'));
+	    }
+		if(!empty($this->input->post('id'))){
+			$this->db->where('order_addons.id',$this->input->post('id'));
+	    }
+		if(!empty($this->input->post('from_date'))){
+			$this->db->where('order_addons.order_date >=',$this->input->post('from_date'));
+	    }
+		if(!empty($this->input->post('upto_date'))){
+			$this->db->where('order_addons.order_date <=',$this->input->post('upto_date'));
+	    }
+		$this->db->where('order_addons.flag','0');
+		$this->db->order_by("order_addons.id", "desc");
+		$query =  $this->db->get()->result_array();
+		return $query;
+	}
 
 	function fetch_single_order($user_id)
 	{

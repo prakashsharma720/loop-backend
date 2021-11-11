@@ -74,17 +74,17 @@ Class Notifications extends CI_Controller {
 		
 				$config = Array(
 				// For Server
-					// 'protocol' => 'mail',
-					// 'smtp_host' => 'mail.muskowl.com',
-					// 'smtp_port' => 587,
-					// 'smtp_user' => 'hemendra@muskowl.com', // change it to yours
-					// 'smtp_pass' => '#hemendra@2021#', // change it to yours
+					'protocol' => 'mail',
+					'smtp_host' => 'mail.muskowl.com',
+					'smtp_port' => 587,
+					'smtp_user' => 'hemendra@muskowl.com', // change it to yours
+					'smtp_pass' => '#hemendra@2021#', // change it to yours
 				// For Local
-					'protocol'  => 'smtp',
-					'smtp_host' => 'ssl://smtp.googlemail.com',
-					'smtp_port' => 465,
-					'smtp_user' => 'hemendra.muskowl@gmail.com', // change it to yours
-					'smtp_pass' => 'hss4u@mo', // change it to yours
+					// 'protocol'  => 'smtp',
+					// 'smtp_host' => 'ssl://smtp.googlemail.com',
+					// 'smtp_port' => 465,
+					// 'smtp_user' => 'hemendra.muskowl@gmail.com', // change it to yours
+					// 'smtp_pass' => 'hss4u@mo', // change it to yours
 		
 					'mailtype' => 'html',
 					'charset' => 'iso-8859-1',	

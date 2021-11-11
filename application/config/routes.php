@@ -91,6 +91,9 @@ $route['Orders_api/update'] = 'api/Orders_api/update';
 $route['Orders_api/fetch_single'] = 'api/Orders_api/fetch_single';
 $route['Orders_api/delete'] = 'api/Orders_api/delete';
 
+$route['Orders_api/addon_order_insert'] = 'api/Orders_api/addon_order_insert';
+$route['Orders_api/addon_order_list'] = 'api/Orders_api/addon_order_list';
+
 //Add To Cart API Routes
 $route['Orders_api/add_to_cart'] = 'api/Orders_api/add_to_cart';
 $route['Orders_api/cart_update'] = 'api/Orders_api/cart_update';
