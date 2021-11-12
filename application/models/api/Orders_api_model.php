@@ -165,13 +165,123 @@ class Orders_api_model extends CI_Model
 		}
 
         $this->db->insert('order_addons', $data);
-        $this->db->insert_id();
+        $order_id = $this->db->insert_id();
         if ($this->db->affected_rows() > 0) {
+			$this->insertNotif_addon_add($order_id);
+			$this->sendMail_addon_add($order_id);
             return True;
         }
         else { 
             return False;
         }
+	}
+    // Insert Notification in Database
+    public function insertNotif_addon_add($order_id) {
+		// Get Details
+		$this->db->select('order_addons.*, addon_services.title as addon_service_title, users.name as user_name, users.id as user_id, users.email as user_email, users.mobile as user_mobile, addon_services.price as addon_service_price');
+		$this->db->from('order_addons'); 
+		$this->db->join('addon_services', 'order_addons.addon_service_id = addon_services.id','left'); 
+		$this->db->join('users', 'order_addons.user_id = users.id','left');
+		$this->db->where(['order_addons.flag'=>'0', 'order_addons.id'=>$order_id]);
+		$query               = $this->db->get()->result_array();
+	
+		$user_id             = $query['0']['user_id'];
+		$addon_service_title = $query['0']['addon_service_title'];
+		// Data for Notification
+		$notifData['employee_id'] = $user_id;
+		$notifData['type']        = 'Addon Order Create';
+		$notifData['subject']     = 'Place Order';
+		$notifData['message']     =  'Addon Order Successful : Addon Title : '.$addon_service_title;
+		$notifData['datetime']    = date('Y-m-d H:i:s');
+		$notifData['status']      = '0';
+		$this->db->insert('notifications', $notifData);
+    }
+	// Send mail to customer for order
+	function sendMail_addon_add($order_id) {
+		$this->db->select('order_addons.*, addon_services.title as addon_service_title, users.name as user_name, users.id as user_id, users.email as user_email, users.mobile as user_mobile, addon_services.price as addon_service_price');
+		$this->db->from('order_addons'); 
+		$this->db->join('addon_services', 'order_addons.addon_service_id = addon_services.id','left'); 
+		$this->db->join('users', 'order_addons.user_id = users.id','left');
+		$this->db->where(['order_addons.flag'=>'0', 'order_addons.id'=>$order_id]);
+		$query =  $this->db->get()->result_array();
+		
+		$customerName               = $query['0']['user_name'];
+		$customerEmail              = $query['0']['user_email'];
+		$subscription_plan_title    = $query['0']['addon_service_title'];
+
+		$plan_price                 = $query['0']['price'];
+		$plan_qty                   = $query['0']['qty'];
+		$grand_total                = $query['0']['grand_total'];
+		
+		$config = Array(
+		// For Server
+		    'protocol' => 'mail',
+			'smtp_host' => 'mail.muskowl.com',
+			'smtp_port' => 587,
+			'smtp_user' => 'hemendra@muskowl.com', // change it to yours
+			'smtp_pass' => '#hemendra@2021#', // change it to yours
+
+		// For Local
+		    // 'protocol' => 'smtp',
+    		// 'smtp_host' => 'ssl://smtp.googlemail.com',
+			// 'smtp_port' => 465,
+			// 'smtp_user' => 'hemendra.muskowl@gmail.com', // change it to yours
+			// 'smtp_pass' => 'hss4u@mo', // change it to yours
+
+			'mailtype' => 'html',
+			'charset' => 'iso-8859-1',	
+			'wordwrap' => TRUE
+		);
+		$message = 
+		'
+		<html>
+			<head>
+				<title>Order Successful !</title>
+			</head>
+			<body>
+			<p> <b> Thanks for addon our plan </b> </p>
+			<p>You have addon this :</p>
+			<table>
+				<tr>
+					<td>Your Name</td>
+					<td>:</td>
+					<td><b> '.$customerName.' </b></td>
+				</tr>
+				<tr>
+					<td>Addon Service Title</td>
+					<td>:</td>
+					<td><b> '.$subscription_plan_title.' </b></td>
+				</tr>
+				<tr>
+					<td>Addon Plan Price</td>
+					<td>:</td>
+					<td><b> '.$plan_price.' </b></td>
+				</tr>
+				<tr>
+					<td>Addon Plan Qty</td>
+					<td>:</td>
+					<td><b> '.$plan_qty.' </b></td>
+				</tr>
+				<tr>
+					<td>Grand Total</td>
+					<td>:</td>
+					<td><b> $'.$grand_total.' </b></td>
+				</tr>
+			</table>
+			</body>
+		</html>
+		';
+		$this->load->library('email', $config);
+		$this->email->set_newline("\r\n");
+		$this->email->from('hemendra.muskowl@gmail.com'); // change it to yours
+		$this->email->to($customerEmail);// change it to yours
+		$this->email->subject('Order Successful');
+		$this->email->message($message);
+		if($this->email->send()) {
+		  return true;
+		} else {
+		 show_error($this->email->print_debugger());
+		}
 	}
 	// Get Addon Order's List
 	function addon_order_list() {

@@ -44,13 +44,27 @@ Class Orders_panel extends CI_Controller
 		$data['orders'] = $this->Orders_model->orders_list();
 		$this->template->load('template','orders_list',$data);
 	}
+    //Addon Orders View
+	public function addon_index() 
+	{
+        $data['title'] = 'Addon Orders List';
+		$data['orders'] = $this->Orders_model->addon_orders_list();
+		$this->template->load('template','addon_order_list',$data);
+	}
     //Orders PDF View
 	public function order_pdf() 
 	{
-		$id              = $this->uri->segment('3');
-		$data['order_list']  = $this->Orders_model->orders_list($id);
-		//echo"<pre>";print_r($data);exit;
-        $html            = $this->load->view('order_details_pdf', $data, true);
+		$id                 = $this->uri->segment('3');
+		$data['order_list'] = $this->Orders_model->orders_list($id);
+        $html               = $this->load->view('order_details_pdf', $data, true);
+        $this->pdf->createPDF($html, 'order_details', false);
+	}
+    //Orders PDF View
+	public function addon_order_pdf() 
+	{
+		$id                  = $this->uri->segment('3');
+		$data['order_list']  = $this->Orders_model->addon_orders_list($id);
+        $html                = $this->load->view('addon_order_details_pdf', $data, true);
         $this->pdf->createPDF($html, 'order_details', false);
 	}
     //Add Record View
@@ -73,7 +87,42 @@ Class Orders_panel extends CI_Controller
        
         $this->template->load('template','orders_add', $data);        
 	}
+    //Add Record View
+    public function add_addon_order() 
+    {
+        $data = array();
+        $data['title']='Add New Addon Order';
+        $data['users']=$this->Orders_model->getUsers();
+        $data['addonservices']=$this->Orders_model->getAddonServices();
+        $data['price']=$this->Orders_model->getPrice();
+        $this->template->load('template','add_addon_order', $data);        
+	}
+    //Add Record to Database
+    public function add_addon_service_record() 
+    {
+		$login_id = $this->session->userdata['logged_in']['id'];
+		$data = array(
+			'order_date' => date('Y-m-d',strtotime($this->input->post('order_date'))),
+			'user_id' => $this->input->post('user_id'),
+			'addon_service_id' => $this->input->post('addon_service_id'),
+			'price' => $this->input->post('plan_price'),
+			'qty' => $this->input->post('qty'),
+			'grand_total' => $this->input->post('plan_total'),
+			'payment_terms' => $this->input->post('payment_terms'),
+			'payment_status' => $this->input->post('payment_status'),
+			'created_by' => $login_id
+		);
+		
+		$result = $this->Orders_model->addon_order_insert($data);
 
+		if ($result == TRUE) {
+			$this->session->set_flashdata('success', 'Addon Order Added Successfully  !');	
+			redirect('Orders_panel/addon_index', 'refresh');
+		} else {
+			$this->session->set_flashdata('failed', 'Insertion Failed, Addon Order Already exists !');
+			redirect('Orders_panel/addon_index', 'refresh');
+		}
+   }
     //Add Record to Database
     public function add_new_record() 
     {
@@ -119,7 +168,14 @@ Class Orders_panel extends CI_Controller
            }
        }
    }
-
+   //Delete Record to Database
+   public function delete_addon_order($id= null){
+		$id = $this->uri->segment('3');
+		$this->db->where('id', $id);
+		$this->db->delete('order_addons');
+		$this->session->set_flashdata('success', 'Order deleted Successfully !');
+		redirect('/Orders_panel/addon_index', 'refresh');
+   }
     //Delete Record to Database
     public function deleteRecord($id= null){
 
@@ -141,6 +197,18 @@ Class Orders_panel extends CI_Controller
     }
 
     //Edit View
+    public function edit_addon_order($id) { 
+		$id                    = $this->uri->segment('3');
+        $data['title']         = 'Edit Addon Order';
+		$query                 = $this->db->get_where("order_addons",array("id"=>$id));
+        $data['current']       = $query->row();
+        $data['id']            = $id;
+        $data['users']         = $this->Orders_model->getUsers();
+        $data['addonservices'] = $this->Orders_model->getAddonServices();
+        $data['price']         = $this->Orders_model->getPrice();
+        $this->template->load('template','edit_addon_order',$data);
+	}
+    //Edit View
     public function edit($id) { 
 		$id                    = $this->uri->segment('3');
         $data['title']         = 'Edit Order';
@@ -153,7 +221,6 @@ Class Orders_panel extends CI_Controller
 		//echo"<pre>";print_r($data);exit;
         $this->template->load('template','orders_edit',$data);
 	}
-
 
     //Edit Record to Database
     public function editOrders($id)
@@ -207,6 +274,48 @@ Class Orders_panel extends CI_Controller
 			redirect('Orders_panel/index','refresh');
 		}
 	}
+
+    //Edit Record to Database
+    public function update_addon_service_record($id)
+    {
+		$data = array();
+		if(!empty($this->input->post('order_date'))) {
+			$data['order_date'] = date('Y-m-d',strtotime($this->input->post('order_date')));
+		}
+		if(!empty($this->input->post('user_id'))) {
+			$data['user_id'] = $this->input->post('user_id');
+		}
+		if(!empty($this->input->post('addon_service_id'))) {
+			$data['addon_service_id'] = $this->input->post('addon_service_id');
+		}
+		if(!empty($this->input->post('plan_price'))) {
+			$data['price'] = $this->input->post('plan_price');
+		}
+		if(!empty($this->input->post('qty'))) {
+			$data['qty'] = $this->input->post('qty');
+		}
+		if(!empty($this->input->post('plan_total'))) {
+			$data['grand_total'] = $this->input->post('plan_total');
+		}
+		if(!empty($this->input->post('payment_terms'))) {
+			$data['payment_terms'] = $this->input->post('payment_terms');
+		}
+		if(!empty($this->input->post('payment_status'))) {
+			$data['payment_status'] = $this->input->post('payment_status');
+		}
+		$data['edited_by'] = $this->session->userdata['logged_in']['id'];
+
+		$result = $this->Orders_model->edit_addon_record($data,$id);
+		
+		if ($result == TRUE) {
+			$this->session->set_flashdata('success', 'Order Updated Successfully !');
+			redirect('Orders_panel/addon_index','refresh');
+		}else {
+			$this->session->set_flashdata('failed', 'Order Updating Failed !');
+			redirect('Orders_panel/addon_index','refresh');
+		}
+	}
+
 
     function getPrice($id) { 
         $result = $this->db->select('price')->from('subscription')->where(['flag'=>'0','id'=>$id])->get()->row_array(); 

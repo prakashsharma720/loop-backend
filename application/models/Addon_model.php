@@ -38,6 +38,10 @@ Class Addon_model extends CI_Model {
 			// $this->db->where('addon_services.flag','0');
 			$this->db->order_by("addon_services.id", "asc");
 
+			if(!empty($this->input->post('id'))){
+				$this->db->where('addon_services.id',$this->input->post('id'));
+		    }
+
 			$query =  $this->db->get()->result_array();
 
             foreach ($query as $key => $value) {
