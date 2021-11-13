@@ -311,7 +311,8 @@ class Orders_api_model extends CI_Model
 	{
 		$this->db->select('orders.*');
         $this->db->from('orders');
-		$multipleWhere = ['user_id' => $user_id, 'plan_status' => 'running'];
+		//$multipleWhere = ['user_id' => $user_id, 'plan_status' => 'running'];
+		$multipleWhere = ['user_id' => $user_id];
         $this->db->where($multipleWhere);
         $this->db->order_by("orders.user_id", "asc");
 
