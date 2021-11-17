@@ -132,18 +132,33 @@ class Orders_api extends CI_Controller {
 
 		if($result > 0)
 		{
-			$data['orders'] = $this->Orders_api_model->fetch_single_order($this->input->post('user_id'));
-			
-			$array = array(
-				'success' => true,
-				'message' => 'Order Details !',
-				'result' => $data
-			);
+			$subscription = $this->Orders_api_model->fetch_single_order($this->input->post('user_id'));
+			if(!empty($subscription)) {
+				$data['subscription'] = $subscription;
+			}
+			$addons  = $this->Orders_api_model->fetch_single_addon_order($this->input->post('user_id'));
+			if(!empty($addons)) {
+				$data['addons'] = $addons;
+			}
+
+			if(!empty($data)) {
+				$array = array(
+					'success' => true,
+					'message' => 'Order Details !',
+					'result' => $data
+				);
+			} else {
+				$array = array(
+					'success' => true,
+					'message' => 'Orders Not Found !',
+					'result' => $data
+				);
+			}
 			echo json_encode($array);
-		}else{
+		} else {
 			$array = array(
 				'success' => false,
-				'message' => 'User Orders Not Found !',
+				'message' => 'User Not Found !',
 			);
 			echo json_encode($array);
 		}	

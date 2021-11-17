@@ -111,6 +111,9 @@ class Gallery_api extends CI_Controller {
 					$insert = $this->Gallery_api_model->insert_api($imgData); 
 					
 					if($insert){ 
+						
+						//$imgData['file_name'] => base_url('/uploads/images/'.$object['file_name']);
+
 						$array = array(
 							'success' => true,
 							'message' => 'Images Inserted Successfully !',
@@ -141,11 +144,23 @@ class Gallery_api extends CI_Controller {
 
 		if($result > 0)
 		{
-			$data['images'] = $this->Gallery_api_model->fetch_single($this->input->post('user_id'));
+			$data = $this->Gallery_api_model->fetch_single($this->input->post('user_id'));
+			$result = array();
+			foreach ($data as $object) :
+				$result[] = array(
+					'id' => $object['id'],
+					'user_id' => $object['user_id'],
+					'title' => $object['title'],
+					'file_name' => base_url('/uploads/images/'.$object['file_name']),
+					'created' => $object['created'],
+					'modified' => $object['modified'],
+					'status' => $object['status']
+				);
+			endforeach;
 			$array = array(
 				'success' => true,
 				'message' => 'Images Found Successfully !',
-				'result' => $data,
+				'result' => $result,
 			);
 
 			echo json_encode($array);

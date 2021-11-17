@@ -312,13 +312,12 @@ class Orders_api_model extends CI_Model
 
 	function fetch_single_order($user_id)
 	{
-		$this->db->select('orders.*');
-        $this->db->from('orders');
-		//$multipleWhere = ['user_id' => $user_id, 'plan_status' => 'running'];
-		$multipleWhere = ['user_id' => $user_id];
-        $this->db->where($multipleWhere);
+		$this->db->select('orders.*, subscription.title as subscription_plan_title, users.name as user_name, users.id as user_id, users.email as user_email, users.mobile as user_mobile, subscription.price as subscription_price');
+		$this->db->from('orders'); 
+		$this->db->join('subscription', 'orders.subscription_plan_id = subscription.id','left'); 
+		$this->db->join('users', 'orders.user_id = users.id','left');
+        $this->db->where('orders.user_id', $user_id);
         $this->db->order_by("orders.user_id", "asc");
-
         $query =  $this->db->get()->result_array();
         return $query;
 	}
@@ -540,6 +539,18 @@ public function addon_orders_list()
 
 	$this->db->where('addon_add_to_cart.flag','0');
 	$this->db->order_by("addon_add_to_cart.id", "asc");
+	$query =  $this->db->get()->result_array();
+	return $query;
+}
+// Addon by User ID
+public function fetch_single_addon_order($user_id) 
+{
+	$this->db->select('order_addons.*, addon_services.title as addon_service_title, users.name as user_name, users.id as user_id, users.email as user_email, users.mobile as user_mobile, addon_services.price as addon_service_price');
+	$this->db->from('order_addons'); 
+	$this->db->join('addon_services', 'order_addons.addon_service_id = addon_services.id','left'); 
+	$this->db->join('users', 'order_addons.user_id = users.id','left');	
+	$this->db->where(['order_addons.flag'=>'0', 'order_addons.user_id'=>$user_id]);
+	$this->db->order_by("order_addons.id", "desc");
 	$query =  $this->db->get()->result_array();
 	return $query;
 }
