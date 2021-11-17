@@ -17,6 +17,7 @@ class Orders_api extends CI_Controller {
         }
 
 		$this->load->model('api/Orders_api_model');
+		$this->load->model('Orders_model');
 		$this->load->library('form_validation');
 	}
 
@@ -212,7 +213,38 @@ class Orders_api extends CI_Controller {
 	}
 
 //------------------------------------------------------------ Add To Cart API : -------------------------------------------------------------------------
-	//Add Functionality for Add To Cart
+
+
+// 
+function userCart()
+{
+	$data = $this->Orders_api_model->orders_list();
+	if(!empty($data)) {
+		$array = array(
+			'success' => true,
+			'Message' => 'Cart Orders Detail !',
+			'result' => $data
+		);
+	} else {		
+		$array = array(
+			'success' => true,
+			'Message' => 'No Cart Orders Detail Found!',
+		);
+	}
+
+	echo json_encode($array);
+}
+//Delete Record to Database
+function delete_cart_item(){
+	$id = $this->input->post('cart_id');
+	$this->Orders_model->cartDelete($id);
+	$array = array(
+		'success' => true,
+		'Message' => 'Cart Orders Deleted!',
+	);
+	echo json_encode($array);
+}
+//Add Functionality for Add To Cart
 	function add_to_cart()
 	{
 		$this->form_validation->set_rules('user_id', 'User ID', 'required');
@@ -287,6 +319,128 @@ class Orders_api extends CI_Controller {
 			);
 
 			$this->Orders_api_model->update_cart($this->input->post('id'), $data);
+
+			$array = array(
+				'success' => true,
+				'message' => 'Order Updated Successfully !',
+				'result' => $data
+			);
+		}
+		else
+		{
+			$array = array(
+				'success' => false,
+				'message' => 'Please enter valid ID !'
+			);
+		}
+		echo json_encode($array);
+	}
+	
+//------------------------------------------------------------ Addon Cart API : -------------------------------------------------------------------------
+
+// 
+function addon_userCart()
+{
+	$data = $this->Orders_api_model->addon_orders_list();
+	if(!empty($data)) {
+		$array = array(
+			'success' => true,
+			'Message' => 'Addon Cart Orders Detail !',
+			'result' => $data
+		);
+	} else {		
+		$array = array(
+			'success' => true,
+			'Message' => 'No Addon Cart Orders Detail Found!',
+		);
+	}
+
+	echo json_encode($array);
+}
+//Delete Record to Database
+function addon_delete_cart_item(){
+	$id = $this->input->post('addon_card_id');
+	$this->Orders_api_model->addoncartDelete($id);
+	$array = array(
+		'success' => true,
+		'Message' => 'Addon Cart Orders Deleted!',
+	);
+	echo json_encode($array);
+}
+
+//Addon Add To Cart
+	function addon_add_to_cart()
+	{
+		$this->form_validation->set_rules('user_id', 'User ID', 'required');
+		if($this->form_validation->run())
+		{
+			$addon_card_id = strip_tags($this->input->post('addon_card_id'));
+
+			// Check if the given mobile already exists
+            $con['returnType'] = 'count';
+            $con['conditions'] = array(
+                'addon_card_id' => $addon_card_id,
+            );
+
+            $userCount = $this->Orders_api_model->addon_getRowsCart($con);
+            
+            if($userCount > 0){
+                // Set the response and exit
+				$array = array(
+					'success' => false,
+					'message' => 'The Given Cart ID Already Exists !',
+					'result' => $userCount
+				);
+            }else{
+
+				$data = array(
+					'date'                  => date('Y-m-d',strtotime($this->input->post('date'))),
+					'addon_card_id'         => $this->input->post('addon_card_id'),  
+					'user_id'               => $this->input->post('user_id'),  
+					'addon_service_id'      => $this->input->post('addon_service_id'),
+					'price'                 => $this->input->post('price'),
+					'qty'                   => $this->input->post('qty'),  
+					'grand_total'           => $this->input->post('grand_total'),
+					'created_by' => $this->input->post('user_id'),
+				);
+
+				$this->Orders_api_model->addon_insert_cart($data);
+
+				$array = array(
+					'success' => true,
+					'message' => 'Order Added to Cart Successfully !',
+					'result' => $data
+				);
+			}
+		}
+		else
+		{
+			$array = array(
+				'success' => true,
+				'message' => 'Please enter order details !'
+			);
+		}
+		echo json_encode($array);
+	}
+
+	//Update Functionality for Add To Cart
+	function addon_cart_update()
+	{
+		$this->form_validation->set_rules('id', 'ID', 'required');
+		if($this->form_validation->run())
+		{	
+			$data = array(
+				'date'                  => date('Y-m-d',strtotime($this->input->post('date'))),
+				'addon_card_id'         => $this->input->post('addon_card_id'),  
+				'user_id'               => $this->input->post('user_id'),  
+				'addon_service_id'      => $this->input->post('addon_service_id'),
+				'price'                 => $this->input->post('price'),
+				'qty'                   => $this->input->post('qty'),  
+				'grand_total'           => $this->input->post('grand_total'),
+				'edited_by' => $this->input->post('user_id'),
+			);
+
+			$this->Orders_api_model->addon_update_cart($this->input->post('id'), $data);
 
 			$array = array(
 				'success' => true,

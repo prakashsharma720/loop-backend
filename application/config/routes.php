@@ -97,6 +97,13 @@ $route['Orders_api/addon_order_list'] = 'api/Orders_api/addon_order_list';
 //Add To Cart API Routes
 $route['Orders_api/add_to_cart'] = 'api/Orders_api/add_to_cart';
 $route['Orders_api/cart_update'] = 'api/Orders_api/cart_update';
+$route['Orders_api/userCart'] = 'api/Orders_api/userCart';
+$route['Orders_api/delete_cart_item'] = 'api/Orders_api/delete_cart_item';
+
+$route['Orders_api/addon_add_to_cart'] = 'api/Orders_api/addon_add_to_cart';
+$route['Orders_api/addon_cart_update'] = 'api/Orders_api/addon_cart_update';
+$route['Orders_api/addon_userCart'] = 'api/Orders_api/addon_userCart';
+$route['Orders_api/addon_delete_cart_item'] = 'api/Orders_api/addon_delete_cart_item';
 
 //Orders API Routes
 $route['Gallery_api/index'] = 'api/Gallery_api/index';

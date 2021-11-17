@@ -83,7 +83,7 @@ class Gallery_api_model extends CI_Model
 	public function verify_user_id($user_id){
     	$condition = "user_id =" . "'" . $user_id . "'";
 		$this->db->select('*');
-		$this->db->from('images');
+		$this->db->from('users');
 		$this->db->where($condition);
 		$this->db->limit(1);
 		$query = $this->db->get();

@@ -142,6 +142,9 @@ class Orders_api_model extends CI_Model
 		if(!empty($this->input->post('user_id'))) {
 			$data['user_id'] = $this->input->post('user_id');
 		}
+		if(!empty($this->input->post('order_id'))) {
+			$data['order_id'] = $this->input->post('order_id');
+		}
 		if(!empty($this->input->post('addon_service_id'))) {
 			$data['addon_service_id'] = $this->input->post('addon_service_id');
 		}
@@ -506,7 +509,96 @@ class Orders_api_model extends CI_Model
 		$this->db->where('id', $user_id);
 		$this->db->update('add_to_cart', $data);
 	}
-    
+	
+//-------------------------------------------------Addon Cart Methods------------------------------------------------------------------------
+
+//Delete Cart data in database
+function addoncartDelete($id)
+	{
+		$data=array('flag'=>'1');
+		$this->db->set('flag','flag',false);
+		$this->db->where('id',$id);
+		if($this->db->update('addon_add_to_cart', $data)){
+			return true;
+		}
+	}
+
+// view orders data from database
+public function addon_orders_list() 
+{
+	$this->db->select('addon_add_to_cart.*, addon_services.title as addon_services_title, users.name as user_name, users.id as user_id, users.email as user_email, users.mobile as user_mobile, addon_services.price as addon_services_price');
+	$this->db->from('addon_add_to_cart'); 
+	$this->db->join('addon_services', 'addon_add_to_cart.addon_service_id = addon_services.id','left'); 
+	$this->db->join('users', 'addon_add_to_cart.user_id = users.id','left'); 
+		
+	if(!empty($this->input->post('user_id'))){
+		$this->db->where('addon_add_to_cart.user_id',$this->input->post('user_id'));
+	}
+	if(!empty($this->input->post('id'))){
+		$this->db->where('addon_add_to_cart.id',$this->input->post('id'));
+	}
+
+	$this->db->where('addon_add_to_cart.flag','0');
+	$this->db->order_by("addon_add_to_cart.id", "asc");
+	$query =  $this->db->get()->result_array();
+	return $query;
 }
 
+function addon_getRowsCart($params = array()){
+	$this->db->select('*');
+	$this->db->from('addon_add_to_cart');
+	
+	//fetch data by conditions
+	if(array_key_exists("conditions",$params)){
+		foreach($params['conditions'] as $key => $value){
+			$this->db->where($key,$value);
+		}
+	}
+	
+	if(array_key_exists("id",$params)){
+		$this->db->where('id',$params['id']);
+		$query = $this->db->get();
+		$result = $query->row_array();
+	}else{
+		//set start and limit
+		if(array_key_exists("start",$params) && array_key_exists("limit",$params)){
+			$this->db->limit($params['limit'],$params['start']);
+		}elseif(!array_key_exists("start",$params) && array_key_exists("limit",$params)){
+			$this->db->limit($params['limit']);
+		}
+		
+		if(array_key_exists("returnType",$params) && $params['returnType'] == 'count'){
+			$result = $this->db->count_all_results();    
+		}elseif(array_key_exists("returnType",$params) && $params['returnType'] == 'single'){
+			$query = $this->db->get();
+			$result = ($query->num_rows() > 0)?$query->row_array():false;
+		}else{
+			$query = $this->db->get();
+			$result = ($query->num_rows() > 0)?$query->result_array():false;
+		}
+	}
+	return $result;
+}
+
+//Add To Cart : Insert Method
+function addon_insert_cart($data)
+{
+	if(!array_key_exists("created_on", $data)){ 
+		$data['created_on'] = date("Y-m-d H:i:s"); 
+	} 
+
+	$this->db->insert('addon_add_to_cart', $data);
+}
+
+//Add To Cart : Update Method
+function addon_update_cart($user_id, $data)
+{
+	if(!array_key_exists("edited_on", $data)){ 
+		$data['edited_on'] = date("Y-m-d H:i:s"); 
+	} 
+	$this->db->where('id', $user_id);
+	$this->db->update('addon_add_to_cart', $data);
+}
+
+} // Main class closed
 ?>
