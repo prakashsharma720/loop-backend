@@ -73,7 +73,7 @@ class Dynamic_menu {
                 $page_id = $row->page_id;
                 $module_name = $row->controller;
                 $action = $row->action;
-                $url = $row->url.$module_name.'/'.$action;
+                $url = base_url().$module_name.'/'.$action;
                 //print_r($url);exit;
                 $dyn_group_id = $row->dyn_group_id;
                 $position = $row->position;
@@ -183,7 +183,7 @@ class Dynamic_menu {
                         $page_id = $row->page_id;
                         $module_name = $row->controller;
                         $action = $row->action;
-                        $url = $row->url.$module_name.'/'.$action;
+                        $url = base_url()          .$module_name.'/'.$action;
                         $dyn_group_id = $row->dyn_group_id;
                         $position = $row->position;
                         $icon_class = '"'.$row->icon_class.'"';
